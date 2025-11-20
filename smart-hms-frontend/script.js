@@ -1,4 +1,5 @@
 const API_BASE = "https://smartcare-hms-hospital-management-system.onrender.com/api";
+
 // - helper for API calls (sends token if exists) ---
 async function apiFetch(path, opts = {}) {
   const url = API_BASE + path;
@@ -126,3 +127,4 @@ async function getMyAppointments() {
 }
 
 function showAlert(msg) { alert(msg); }
+

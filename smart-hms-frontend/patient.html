@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Patients — SmartCare-HMS</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="navbar">
+    <div class="brand"><div class="logo-mark">HMS</div>
+    <div><h1>SmartCare-HMS</h1>
+      <div class="hint">Patients</div>
+    </div></div>
+    <nav class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="doctor.html">Doctors</a>
+      <a href="appointment.html">Appointment</a>
+      <a href="feedback.html">Feedback</a>   
+      <a href="login.html">Login</a>
+    </nav>
+    
+  </header>
+
+  <main class="container" style="padding-top:18px">
+    <div class="card">
+      <h3>Registered Patients</h3>
+      <div id="patientList" style="margin-top:12px"></div>
+    </div>
+  </main>
+
+<script src="script.js"></script>
+<script>
+(function showPatients(){
+  getPatients().then(patients=>{
+    const el = document.getElementById('patientList');
+    el.innerHTML = patients.length ? patients.map(p=>`<div class="card" style="margin-bottom:8px"><strong>${p.name}</strong><div class="hint">${p.email||'no email'}</div></div>`).join('') : '<div class="hint">No patients yet</div>';
+  });
+})();
+</script>
+</body>
+</html>

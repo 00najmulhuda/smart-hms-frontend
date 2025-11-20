@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Feedback — SmartCare-HMS</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="navbar">
+    <div class="brand"><div class="logo-mark">HMS</div><div><h1>SmartCare-HMS</h1><div class="hint">Feedback</div></div></div>
+    <nav class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="doctor.html">Doctors</a>
+      <a href="appointment.html">Appointment</a>
+      <a href="login.html">Login</a>
+    </nav>
+  </header>
+
+  <main class="container" style="padding-top:18px">
+    <div class="card" style="max-width:720px;margin:auto">
+      <h3>Anonymous Feedback</h3>
+      <p class="hint">Share your experience. You can submit anonymously. Hospital staff will be alerted for critical complaints.</p>
+
+      <div style="margin-top:12px">
+        <input id="fbName" class="input" placeholder="Your name (optional)">
+      </div>
+      <div style="margin-top:10px">
+        <textarea id="fbMessage" class="input" placeholder="Write your feedback here..." rows="6"></textarea>
+      </div>
+
+      <div style="margin-top:12px; display:flex; gap:10px">
+        <button class="btn-primary" onclick="submitFeedback()">Submit Feedback</button>
+        <button class="btn-secondary" onclick="document.getElementById('fbMessage').value='';document.getElementById('fbName').value='';">Clear</button>
+      </div>
+
+      <div id="fbResult" style="margin-top:12px"></div>
+    </div>
+  </main>
+
+<script src="script.js"></script>
+<script>
+async function submitFeedback(){
+  const name = document.getElementById('fbName').value.trim();
+  const message = document.getElementById('fbMessage').value.trim();
+  if(!message) return alert('Please write your feedback');
+
+  // uses apiFetch from your script.js (API_BASE already set)
+  const res = await apiFetch('/feedback', {
+    method: 'POST',
+    body: JSON.stringify({ name, message })
+  });
+
+  if (res.ok) {
+    document.getElementById('fbResult').innerHTML = '<div class="card">Thank you — your feedback has been submitted.</div>';
+    document.getElementById('fbMessage').value = '';
+    document.getElementById('fbName').value = '';
+  } else {
+    alert(res.data?.message || 'Submission failed');
+  }
+}
+</script>
+</body>
+</html>

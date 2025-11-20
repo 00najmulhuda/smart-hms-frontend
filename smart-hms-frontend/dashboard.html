@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Dashboard — SmartCare-HMS</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <header class="navbar">
+    <div class="brand"><div class="logo-mark">HMS</div><div><h1>SmartCare-HMS</h1><div class="hint">Dashboard</div></div></div>
+    <nav class="nav-links">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="admin-add-doctor.html">Add Doctor</a>
+      <a href="view-users.html">Users</a>
+      <a href="billing.html">Billing</a>
+      <a id="logoutBtn" href="#">Logout</a>
+    </nav>
+    <button class="cta" onclick="logout()">Logout</button>
+  </header>
+
+  <main class="container" style="padding-top:18px">
+    <div id="welcome" class="card fade-in" style="margin-bottom:18px; display:flex; justify-content:space-between; align-items:center">
+      <div>
+        <h2 id="welcomeTitle">Welcome</h2>
+        <div class="hint" id="welcomeSub">Role</div>
+      </div>
+      <div style="text-align:right">
+        <div class="hint">Quick actions</div>
+        <div style="margin-top:10px">
+          <button class="btn-primary" onclick="location.href='appointment.html'">Book Appointment</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-3" style="gap:16px">
+      <div class="kpi card">
+        <h4>Total Patients</h4>
+        <p id="kPatients">0</p>
+      </div>
+      <div class="kpi card">
+        <h4>Today's Appointments</h4>
+        <p id="kAppts">0</p>
+      </div>
+      <div class="kpi card">
+        <h4>Pending Reminders</h4>
+        <p id="kRem">0</p>
+      </div>
+    </div>
+
+    <div style="margin-top:18px" class="card">
+      <h3>Doctor Analytics</h3>
+      <canvas id="chart" style="width:100%; height:260px"></canvas>
+    </div>
+
+    <div style="margin-top:18px" class="card">
+      <h3>Recent Appointments</h3>
+      <table class="table">
+        <thead><tr><th>Time</th><th>Patient</th><th>Doctor</th><th>Token</th><th>Status</th></tr></thead>
+        <tbody id="recentList"></tbody>
+      </table>
+    </div>
+
+  </main>
+
+  <footer class="footer">© 2025 SmartCare-HMS</footer>
+
+<script src="script.js"></script>
+<script>
+async function renderDashboard(){
+  const user = JSON.parse(localStorage.getItem('currentUser')||'null') || {name:'Guest', role:'patient'};
+  document.getElementById('welcomeTitle').textContent = `Hello, ${user.name}`;
+  document.getElementById('welcomeSub').textContent = `${(user.role || 'patient').toUpperCase()} • NARA SmartCare`;
+
+  const appts = await loadAppointments();
+  const patients = await getPatients();
+  document.getElementById('kPatients').textContent = patients.length;
+  document.getElementById('kAppts').textContent = appts.filter(a=>a.status==='booked').length;
+  document.getElementById('kRem').textContent = appts.filter(a=>a.reminderSent===false && new Date(a.datetime) > Date.now()).length;
+
+  const tbody = document.getElementById('recentList');
+  tbody.innerHTML = appts.slice(-6).reverse().map(a=>{
+    return `<tr><td>${new Date(a.datetime).toLocaleString()}</td><td>${a.patientName}</td><td>${a.doctorName}</td><td><span class="token-pill">${a.token||'—'}</span></td><td>${a.status}</td></tr>`;
+  }).join('');
+
+  // Chart demo
+  const ctx = document.getElementById('chart').getContext('2d');
+  const labels = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug'];
+  const data = { labels, datasets: [{ label:'Patients', data: labels.map(()=>Math.floor(Math.random()*40)+10), fill:true, backgroundColor:'rgba(29,155,240,0.12)', borderColor:'rgb(29,155,240)', tension:0.3 }] };
+  new Chart(ctx,{ type:'line', data, options:{plugins:{legend:{display:false}} } });
+}
+function logout(){ localStorage.removeItem('currentUser'); localStorage.removeItem('token'); location.href='login.html' }
+
+renderDashboard();
+</script>
+<script>
+  const adminUser = JSON.parse(localStorage.getItem("currentUser") || "null");
+
+  if (!adminUser || adminUser.role !== "admin") {
+    alert("Access Denied: Admin Only");
+    window.location.href = "index.html";
+  }
+
+  document.getElementById("logoutBtn").addEventListener("click", () => {
+    localStorage.removeItem("currentUser");
+    window.location.href = "index.html";
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>SmartCare-HMS — Home</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="navbar">
+    <div class="brand">
+      <div class="logo-mark">HMS</div>
+      <div>
+        <h1>SmartCare-HMS</h1>
+        <div class="hint">Smart Hospital System</div>
+      </div>
+    </div>
+
+    <nav class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="doctor.html">Doctors</a>
+      <a href="appointment.html">Appointment</a>
+      <a href="feedback.html">Feedback</a>   <!-- public feedback link -->
+      <a href="login.html">Login</a>
+    </nav>
+    
+
+    <button class="cta" onclick="location.href='appointment.html'">Book Appointment</button>
+  </header>
+
+  <main class="container">
+    <section class="hero card" aria-labelledby="hero-heading">
+      <div class="hero-left">
+        <h1 id="hero-heading">Your Health, <br>Our Priority</h1>
+        <p>We provide the best medical services to you and your family — fast bookings, clear records, and reliable care.</p>
+        <div class="hero-actions">
+          <button class="btn-primary" onclick="location.href='appointment.html'">Book Appointment</button>
+          <button class="btn-secondary" onclick="location.href='doctor.html'">Learn More</button>
+        </div>
+      </div>
+      <div class="hero-right">
+        <img src="dr-2.png" alt="Doctor smiling - SmartCare-HMS">
+      </div>
+    </section>
+
+    <section class="features">
+      <div class="feature-card">
+        <div class="feature-icon">+</div>
+        <div class="feature-text">
+          <h4>Emergency</h4>
+          <p class="hint">Quick and reliable emergency support 24/7.</p>
+        </div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">👩‍⚕️</div>
+        <div class="feature-text">
+          <h4>OPD</h4>
+          <p class="hint">Book outpatient consultations easily.</p>
+        </div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔬</div>
+        <div class="feature-text">
+          <h4>Diagnostics</h4>
+          <p class="hint">Trusted laboratory & imaging services.</p>
+        </div>
+      </div>
+    </section>
+
+    <section style="padding:36px 0">
+      <div class="card" style="display:flex;gap:20px;align-items:center">
+        <div style="flex:1">
+          <h3>About Our Hospital</h3>
+          <p class="hint">SmartCare-HMS is a demo hospital management system — built for modern clinics and small hospitals to manage appointments, doctors, and patients.</p>
+        </div>
+        <div style="width:320px">
+          <img src="HMS_Banner (2).png" alt="hospital sample" style="width:100%;border-radius:10px;object-fit:cover">
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">© 2025 SmartCare-HMS</footer>
+  <script src="script.js"></script>
+  <script>
+    const usr = JSON.parse(localStorage.getItem("currentUser") || "null");
+  const btn = document.getElementById("loginLogoutBtn");
+
+  if (usr) {
+    btn.textContent = "Logout";
+    btn.href = "#";
+    btn.addEventListener("click", () => {
+      localStorage.removeItem("currentUser");
+      window.location.href = "index.html";
+    });
+  }
+  </script>
+</body>
+</html>

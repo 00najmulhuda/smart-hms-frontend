@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Sign Up — SmartCare-HMS</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="navbar">
+    <div class="brand"><div class="logo-mark">HMS</div>
+    <div><h1>SmartCare-HMS</h1><div class="hint">Create account</div>
+  </div>
+</div>
+  </header>
+
+  <main class="container" style="display:flex;justify-content:center;padding-top:36px">
+    <div class="card" style="max-width:720px;width:100%">
+      <h3>Create an account</h3>
+      <form id="signupForm" style="margin-top:12px">
+        <div class="form-row">
+          <input id="suName" class="input" placeholder="Full name" required>
+          <input id="suEmail" class="input" placeholder="Email" required>
+        </div>
+        <div class="form-row" style="margin-top:12px">
+          <select id="suRole" class="input">
+            <option value="patient">Patient</option>
+            <option value="doctor">Doctor</option>
+            <option value="admin">Admin</option>
+          </select>
+          <input id="suPhone" class="input" placeholder="Phone (optional)">
+        </div>
+        <div class="form-row" style="margin-top:12px">
+          <input id="suPass" class="input" type="password" placeholder="Password" required>
+          <input id="suPass2" class="input" type="password" placeholder="Confirm password" required>
+        </div>
+
+        <div style="margin-top:14px;display:flex;gap:10px">
+          <button class="btn-primary" type="button" onclick="handleSignup()">Create Account</button>
+          <button class="btn-secondary" type="button" onclick="location.href='login.html'">Back to Login</button>
+        </div>
+      </form>
+    </div>
+  </main>
+
+<script src="script.js"></script>
+<script>
+async function handleSignup(){
+  const name = document.getElementById('suName').value.trim();
+  const email = document.getElementById('suEmail').value.trim();
+  const role = document.getElementById('suRole').value;
+  const p1 = document.getElementById('suPass').value;
+  const p2 = document.getElementById('suPass2').value;
+  if(!name||!email||!p1) return alert('Fill required');
+  if(p1 !== p2) return alert('Passwords do not match');
+  const res = await registerUser(name, email, p1, role);
+  if(res.ok) {
+    alert('Registered. You can login now.');
+    location.href = 'login.html';
+  } else {
+    alert(res.message || 'Register failed');
+  }
+}
+</script>
+</body>
+</html>

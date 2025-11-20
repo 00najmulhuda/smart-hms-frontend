@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Book Appointment — SmartCare-HMS</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="navbar">
+    <div class="brand">
+      <div class="logo-mark">HMS</div>
+      <div><h1>SmartCare-HMS</h1>
+        <div class="hint">Appointments</div>
+      </div>
+    </div>
+    <nav class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="doctor.html">Doctors</a>
+      <a href="appointment.html">Appointment</a>
+      <a href="feedback.html">Feedback</a>   <!-- public feedback link -->
+      <a href="login.html">Login</a>
+    </nav>
+    
+  </header>
+
+  <main class="container" style="padding-top:18px">
+    <div class="card" style="display:grid; grid-template-columns:1fr 360px; gap:18px">
+      <div>
+        <h3>Book an Appointment</h3>
+        <div style="margin-top:10px">
+          <label class="hint">Choose Doctor</label>
+          <select id="bookDoctor" class="input"></select>
+        </div>
+        <div class="form-row" style="margin-top:10px">
+          <input id="bookDate" class="input" type="date">
+          <input id="bookTime" class="input" type="time">
+        </div>
+        <div style="margin-top:10px">
+          <input id="bookReason" class="input" placeholder="Reason for visit (optional)">
+        </div>
+        <div style="margin-top:12px; display:flex; gap:10px">
+          <button class="btn-primary" onclick="handleBook()">Confirm Booking</button>
+          <button class="btn-secondary" onclick="useMyAccount()">Use My Account</button>
+        </div>
+
+        <div id="bookResult" style="margin-top:14px"></div>
+      </div>
+
+      <div>
+        <div class="card">
+          <h4>Quick Info</h4>
+          <p class="hint">Estimated waiting time is calculated from the number of bookings before your chosen slot multiplied by doctor's average time.</p>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h4>Your Upcoming</h4>
+          <div id="myUpcoming" class="hint">No upcoming appointments</div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+<script src="script.js"></script>
+<script>
+(async function initBooking(){
+  const doctors = await getDoctors();
+  const sel = document.getElementById('bookDoctor');
+  const urlParams = new URLSearchParams(window.location.search);
+  const preDoctor = urlParams.get('doctor');
+  sel.innerHTML = doctors.map(d=>`<option value="${d.id}">${d.name} — ${d.specialization}</option>`).join('');
+  if(preDoctor){ sel.value = preDoctor; }
+  renderMyUpcoming();
+})();
+
+function useMyAccount(){
+  const u = JSON.parse(localStorage.getItem('currentUser')||'{"name":"Guest","id":"p-demo"}');
+  alert('Using account: '+(u.name || u.email));
+}
+
+async function handleBook(){
+  const docId = document.getElementById('bookDoctor').value;
+  const date = document.getElementById('bookDate').value;
+  const time = document.getElementById('bookTime').value;
+  if(!date || !time) return alert('Select date & time');
+  const datetime = date + 'T' + time;
+  const reason = document.getElementById('bookReason').value || '';
+  const result = await createAppointment({ doctorId: docId, datetime, reason });
+  if(result.ok){
+    document.getElementById('bookResult').innerHTML = `<div class="card"><div>Booked! Token: <span class="token-pill">${result.token}</span></div><div class="hint" style="margin-top:8px">Estimated wait: <strong>${result.eta} minutes</strong></div></div>`;
+    renderMyUpcoming();
+  } else {
+    alert(result.message || 'Booking failed');
+  }
+}
+
+async function renderMyUpcoming(){
+  const my = await getMyAppointments();
+  const el = document.getElementById('myUpcoming');
+  if(!my || my.length===0) el.innerHTML = '<div class="hint">No upcoming appointments</div>';
+  else el.innerHTML = my.slice(-6).reverse().map(a=>`<div style="margin-bottom:8px"><strong>${new Date(a.datetime).toLocaleString()}</strong><div class="hint">Dr. ${a.doctorName} • Token: <span class="token-pill">${a.token}</span></div></div>`).join('');
+}
+</script>
+<script>
+  const usr = JSON.parse(localStorage.getItem("currentUser") || "null");
+  const btn = document.getElementById("loginLogoutBtn");
+
+  if (usr) {
+    btn.textContent = "Logout";
+    btn.href = "#";
+    btn.addEventListener("click", () => {
+      localStorage.removeItem("currentUser");
+      window.location.href = "index.html";
+    });
+  }
+</script>
+</body>
+</html>

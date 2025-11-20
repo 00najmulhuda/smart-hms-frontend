@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Billing — SmartCare-HMS</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="navbar">
+    <div class="brand"><div class="logo-mark">HMS</div>
+    <div><h1>SmartCare-HMS</h1><div class="hint">Billing</div>
+  </div></div>
+    <nav class="nav-links">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="admin-add-doctor.html">Add Doctor</a>
+      <a href="view-users.html">Users</a>
+      <a href="billing.html">Billing</a>
+      <a id="logoutBtn" href="#">Logout</a>
+    </nav>
+  </header>
+
+  <main class="container" style="padding-top:18px">
+    <div class="card">
+      <h3>Generate Invoice</h3>
+      <div class="form-row" style="margin-top:12px">
+        <input id="billPatient" class="input" placeholder="Patient name or id">
+        <input id="billAmount" class="input" placeholder="Amount (₹)">
+      </div>
+      <div style="margin-top:10px">
+        <button class="btn-primary" onclick="createInvoice()">Create Invoice</button>
+      </div>
+
+      <div id="invoices" style="margin-top:18px"></div>
+    </div>
+  </main>
+
+<script src="script.js"></script>
+<script>
+function createInvoice(){
+  const p = document.getElementById('billPatient').value.trim(); const amt = document.getElementById('billAmount').value.trim();
+  if(!p || !amt){ alert('Enter patient and amount'); return;}
+  const inv = { id:'inv-'+Date.now().toString().slice(-5), patient:p, amount:amt, date:new Date().toISOString() };
+  const invoices = JSON.parse(localStorage.getItem('invoices')||'[]'); invoices.push(inv); localStorage.setItem('invoices', JSON.stringify(invoices));
+  renderInvoices();
+}
+function renderInvoices(){
+  const invs = JSON.parse(localStorage.getItem('invoices')||'[]');
+  document.getElementById('invoices').innerHTML = invs.length ? invs.map(i=>`<div class="card" style="margin-bottom:8px"><div><strong>Invoice ${i.id}</strong> • ${new Date(i.date).toLocaleDateString()}</div><div class="hint">${i.patient} — ₹${i.amount}</div></div>`).join('') : '<div class="hint">No invoices yet</div>';
+}
+renderInvoices();
+</script>
+<script>
+  const adminUser = JSON.parse(localStorage.getItem("currentUser") || "null");
+
+  if (!adminUser || adminUser.role !== "admin") {
+    alert("Access Denied: Admin Only");
+    window.location.href = "index.html";
+  }
+
+  document.getElementById("logoutBtn").addEventListener("click", () => {
+    localStorage.removeItem("currentUser");
+    window.location.href = "index.html";
+  });
+</script>
+</body>
+</html>

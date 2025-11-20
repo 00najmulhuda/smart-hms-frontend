@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Add Doctor — Admin Panel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <header class="navbar">
+    <div class="brand">
+      <div class="logo-mark">HMS</div>
+      <div>
+        <h1>NARA SmartCare</h1>
+        <div class="hint">Admin — Add Doctor</div>
+      </div>
+    </div>
+
+ 
+    <nav class="nav-links">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="admin-add-doctor.html">Add Doctor</a>
+      <a href="billing.html">Billing</a>
+      <a href="feedback.html">Anonymous Feedback</a>
+      <a id="logoutBtn" href="#">Logout</a>
+    </nav>
+  </header>
+
+  <main class="container" style="padding-top:20px">
+    <div class="card" style="max-width:420px;margin:auto">
+      <h3>Add New Doctor</h3>
+
+      <label>Name</label>
+      <input id="docName" type="text" class="input" placeholder="Ex: Dr. Amit Sharma">
+
+      <label>Specialization</label>
+      <input id="docSpec" type="text" class="input" placeholder="Ex: Cardiologist">
+
+      <label>Experience (Years)</label>
+      <input id="docExp" type="number" class="input" placeholder="Ex: 10">
+
+      <button class="btn-primary" style="margin-top:14px" onclick="addDoctor()">Add Doctor</button>
+    </div>
+  </main>
+
+<script src="script.js"></script>
+
+<script>
+async function addDoctor() {
+  const name = document.getElementById('docName').value.trim();
+  const specialization = document.getElementById('docSpec').value.trim();
+  const experience = document.getElementById('docExp').value.trim();
+
+  if (!name || !specialization || !experience) {
+    alert("All fields are required");
+    return;
+  }
+
+  const res = await apiFetch('/doctors', {
+    method: 'POST',
+    body: JSON.stringify({ name, specialization, experience })
+  });
+
+  if (res.ok) {
+    alert("Doctor added successfully!");
+    location.href = "doctor.html";
+  } else {
+    alert("Failed: " + (res.data?.message || "Server error"));
+  }
+}
+</script>
+
+<script>
+  const adminUser = JSON.parse(localStorage.getItem("currentUser") || "null");
+
+  if (!adminUser || adminUser.role !== "admin") {
+    alert("Access Denied: Admin Only");
+    window.location.href = "index.html";
+  }
+
+  document.getElementById("logoutBtn").addEventListener("click", () => {
+    localStorage.removeItem("currentUser");
+    window.location.href = "index.html";
+  });
+</script>
+
+</body>
+</html>

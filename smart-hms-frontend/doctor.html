@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Doctors — SmartCare-HMS</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="navbar">
+    <div class="brand"><div class="logo-mark">HMS</div><div><h1>SmartCare-HMS</h1><div class="hint">Doctors</div></div></div>
+    <nav class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="doctor.html">Doctors</a>
+      <a href="appointment.html">Appointment</a>
+      <a href="feedback.html">Feedback</a>   <!-- public feedback link -->
+      <a href="login.html">Login</a>
+    </nav>
+    
+  </header>
+
+  <main class="container" style="padding-top:18px">
+    <div class="card">
+      <h3>Available Doctors</h3>
+      <div id="doctorList"
+        style="margin-top:12px;display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px">
+      </div>
+    </div>
+  </main>
+
+  <script src="script.js"></script>
+  <script>
+  (async function renderDoctors(){
+    const docs = await getDoctors();
+    const container = document.getElementById('doctorList');
+
+    if (!docs.length) {
+      container.innerHTML = "<div>No doctors found</div>";
+      return;
+    }
+
+    container.innerHTML = docs.map(d=>`
+      <div class="card" style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+        <div>
+          <h4 style="margin:0">${d.name}</h4>
+          <div class="hint">${d.specialization}</div>
+          <div class="hint">Exp: ${d.experience} yrs</div>
+        </div>
+        <button class="btn-primary" onclick="location.href='appointment.html?doctor=${d.id}'">
+          Book
+        </button>
+      </div>
+    `).join('');
+  })();
+  </script>
+  <script>
+    const usr = JSON.parse(localStorage.getItem("currentUser") || "null");
+    const btn = document.getElementById("loginLogoutBtn");
+  
+    if (usr) {
+      btn.textContent = "Logout";
+      btn.href = "#";
+      btn.addEventListener("click", () => {
+        localStorage.removeItem("currentUser");
+        window.location.href = "index.html";
+      });
+    }
+  </script>
+</body>
+</html>
